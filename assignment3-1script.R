@@ -363,15 +363,26 @@ importance(forest)
 
 #Question 3
 
-estimate_and_summarize_alpha_diversity <- function(physeq, method = "shannon") 
- 
-   # Calculate alpha diversity
+adiv <-function(df){
+  estimates <- data.frame(
+    "Observed" = phyloseq::estimate_richness(df, measures = "Observed"), 
+    "Shannon" = phyloseq::estimate_richness(df, measures = "Shannon"), 
+    "PD" = picante::pd(samp = data.frame(t(data.frame(phyltoseq::otu_table(df))))), 
+    tree = phyloseq::phy_tree(df))[,1]
+  "Status" = phyloseq::sample_data(df)$Status
+summary <- estimates %>%
+  group_by(Status) %>%
+  dplyr::summarise(median_observed = median(observed), 
+                   median_shannon = median(Shannon), 
+                   median_pd = median(PD))
+print(summary)
+return(estimates)
+
+green <- adiv(ps_rare)
   
-  adiv <- estimate_richness(physeq, method = method)
-  
-  # Print summary
-  
-print(summary(adiv))
+}
+
+
   
   # Return the adiv object
   
